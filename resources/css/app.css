@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+/* Tell Tailwind where to find your Blade files */
+@source "../views/**/*.blade.php";
+@source "../../storage/framework/views/*.php";
