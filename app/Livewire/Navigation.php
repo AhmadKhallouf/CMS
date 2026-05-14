@@ -75,7 +75,7 @@ class Navigation extends Component
         });
     }
 
-    public function render()
+    public function render() 
     {
         return view('livewire.navigation', [
             'cart' => app(CartManager::class)

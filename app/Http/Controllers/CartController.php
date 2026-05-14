@@ -12,8 +12,8 @@ class CartController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $cart = app(CartManager::class);
-        return view('cart', [
+        $cart = app(CartManager::class); 
+        return view('cart', [ 
             'cart' => $cart
         ]);
     }

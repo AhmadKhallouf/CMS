@@ -10,7 +10,7 @@ class VariantSelector extends Component
 {
     public ProductModel $product;
 
-    public Collection $variations;
+    public Collection $variations; 
 
     public function mount()
     {

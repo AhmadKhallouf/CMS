@@ -19,7 +19,7 @@ return new class extends Migration
             $table->boolean('is_featured')->default(0);
             $table->string('slug')->unique();
             $table->boolean('is_published');
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->softDeletes();
             $table->timestamps();
         });

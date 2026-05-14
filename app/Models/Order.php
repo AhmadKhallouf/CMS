@@ -32,4 +32,9 @@ class Order extends Model
         ->withPivot('variants','quantity','price')
         ->withTimestamps();
     }
+
+    public function address(): BelongsTo
+    {
+        return $this->belongsTo(Address::class);
+    }
 }

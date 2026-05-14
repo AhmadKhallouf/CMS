@@ -23,8 +23,8 @@ class Checkout extends Component
     public AddressCheckoutForm $addressForm;
     public $showAddressForm = false;
     public $shippingType;
-    public $shippingTypeModel;
     public $address_model;
+    public $shippingTypeModel;
 
     protected $listeners = [
         'cart.updated' => '$refresh',
@@ -49,6 +49,12 @@ class Checkout extends Component
     public function updatedShippingType()
     {
         $this->shippingTypeModel = ShippingType::find($this->shippingType);
+    }
+
+    #[On('shippingType')]
+    public function getSelectedShippingTypeProperty()
+    {
+        return $this->shippingTypeModel;
     }
 
     public function mount()

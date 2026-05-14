@@ -1,5 +1,5 @@
 <div>
     <div>
-        <livewire:variant-dropdown :variations="$variations" />
+        <livewire:variant-dropdown :variations="$variations" /> 
     </div>
 </div>

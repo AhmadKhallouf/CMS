@@ -5,8 +5,10 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
@@ -18,6 +20,7 @@ class User extends Authenticatable
     use HasFactory;
     use HasProfilePhoto;
     use Notifiable;
+    use Billable;
     use TwoFactorAuthenticatable;
     use InteractsWithMedia;
 
@@ -115,6 +118,12 @@ public function lastMessageWith(User $user)
         $query->where('sender_id', $user->id)
               ->where('receiver_id', $this->id);
     })->latest()->first();
+}
+
+
+public function addresses(): HasMany
+{
+    return $this->hasMany(Address::class);
 }
 
 

@@ -7,7 +7,7 @@
     id="variation">
         <option value="">Select {{ $variations[0]['type']}}</option>
         @foreach ($variations as $variant)
-           <option value="{{$variant->id}}">{{$variant->title}}</option> 
+           <option value="{{$variant->id}}">{{$variant->title}}</option>  
         @endforeach
     </select>
 

@@ -26,7 +26,7 @@
 
             const elements = this.stripe.elements()
             this.cardElement = elements.create('card')
-
+ 
             this.cardElement.mount('#card-element')
         }
     }"
@@ -107,10 +107,10 @@
             <div class="mt-3">
                 <label for="address_line_2" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Address
                     Line 2</label>
-                <input wire:model.live="addressForm.address_2" type="text" id="address_line_2"
+                <input wire:model.live="addressForm.address2" type="text" id="address_line_2"
                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                        placeholder="Address Line 2">
-                @error('addressForm.address_2')
+                @error('addressForm.address2')
                 <div class="text-sm text-red-500">
                     {{ $message }}
                 </div>
@@ -131,10 +131,10 @@
                 <div>
                     <label for="post_code" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Post
                         Code / Zip Code</label>
-                    <input wire:model="addressForm.postcode" type="text" id="post_code"
+                    <input wire:model="addressForm.post_code" type="text" id="post_code"
                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            placeholder="Post Code / Zip Code">
-                    @error('addressForm.postcode')
+                    @error('addressForm.post_code')
                     <div class="text-sm text-red-500">
                         {{ $message }}
                     </div>

@@ -12,6 +12,6 @@ class CheckoutController extends Controller
     public function __invoke()
     {
         
-        return view('checkout');
+        return view('checkout'); 
     }
 }

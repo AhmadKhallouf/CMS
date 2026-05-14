@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class VariantDropdown extends Component
 {
-    public Collection $variations;
+    public Collection $variations; 
 
     public $selectedVariant;
 

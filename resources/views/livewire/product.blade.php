@@ -8,7 +8,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div wire:ignore>
                     @if (count($product->getMedia()) > 1)
-                        <x-gallery :media="$product->getMedia()"/>
+                        <x-gallery :media="$product->getMedia()"/> 
                     @else
                         <img src="{{ $product->getFirstMediaUrl() }}" alt="{{ $product->meta_description }}"/>
                     @endif

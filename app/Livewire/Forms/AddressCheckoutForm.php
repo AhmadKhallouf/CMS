@@ -11,11 +11,11 @@ class AddressCheckoutForm extends Form
     public $address = '';
 
     #[Validate('required')]
-    public $address_2 = '';
+    public $address2 = '';
 
     #[Validate('required')]
     public $city = '';
 
     #[Validate('required')]
-    public $postcode = '';
+    public $post_code = '';
 }

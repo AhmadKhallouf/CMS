@@ -10,7 +10,7 @@ use Livewire\Attributes\On;
 
 class Product extends Component
 {
-    public ProductModel $product;
+    public ProductModel $product; 
     
     public $cart;
 

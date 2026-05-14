@@ -1,3 +1,3 @@
 <div>
-    <livewire:product :product="$product" />
+    <livewire:product :product="$product" /> 
 </div>
