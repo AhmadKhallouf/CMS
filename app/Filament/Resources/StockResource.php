@@ -44,9 +44,9 @@ class StockResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('product.title')->label('Product'),
-                TextColumn::make('variant.title')->label('Variant'),
-                TextColumn::make('quantity')->label('Quantity'), 
+                TextColumn::make('product.title')->label('Product')->searchable(),
+                TextColumn::make('variant.title')->label('Variant')->searchable(),
+                TextColumn::make('quantity')->label('Quantity')->searchable(), 
             ])
             ->filters([
                 //

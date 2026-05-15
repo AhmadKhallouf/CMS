@@ -42,7 +42,7 @@ class UsersResource extends Resource
             ->columns([
                 ImageColumn::make('profile_photo_url')->label('Profile Photo')->rounded(1),
                 TextColumn::make('name'),
-                TextColumn::make('email'),
+                TextColumn::make('email')->copyable(),
                 TextColumn::make('email_verified_at'),
             ])
             ->filters([

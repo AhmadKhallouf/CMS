@@ -16,6 +16,8 @@
         <!-- Include Flowbite CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
     
+    <script src="https://js.stripe.com/v3/"></script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <!-- Styles -->
