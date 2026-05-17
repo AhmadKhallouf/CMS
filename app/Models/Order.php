@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
@@ -19,7 +21,16 @@ class Order extends Model
         'discount',
         'total',
         'status',
+        'address_id'
     ];
+
+    public static function booted()
+    {
+        static::creating(function ($order){
+            $order->order_id = Str::uuid();
+            $order->status = OrderStatus::PENDING;
+        });
+    }
 
     public function user(): BelongsTo
     {

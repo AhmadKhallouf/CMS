@@ -34,6 +34,7 @@
                                 Pay {{ money($product->price) }}
                             </x-button>
                         @endif
+
                     </div>
                 </div>
             </div>

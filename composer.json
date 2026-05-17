@@ -21,6 +21,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.4",
+        "masmerise/livewire-toaster": "^2.10",
         "spatie/laravel-medialibrary": "^11.0",
         "staudenmeir/laravel-adjacency-list": "^1.20",
         "stripe/stripe-php": "16.2.0"

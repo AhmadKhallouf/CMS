@@ -4,7 +4,7 @@
             <h1 class="text-2xl font-semibold text-gray-900">Your Cart</h1>
         </div>
 
-        <div class="mx-auto mt-8 max-w-2xl md:mt-12"> 
+        <div class="mx-auto mt-8 max-w-2xl md:mt-12">
             <div class="bg-white shadow">
                 <div class="px-4 py-6 sm:px-8 sm:py-10">
                     <div class="flow-root">
@@ -14,7 +14,7 @@
                             @endforeach
                         </ul>
                     </div>
- 
+
                     <div class="mt-6 border-t border-b py-2">
                         <div class="flex items-center justify-between">
                             <p class="text-sm text-gray-400">Subtotal</p>

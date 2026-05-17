@@ -124,7 +124,7 @@ class Checkout extends Component
             'email' => $this->customerForm->email,
         ]);
 
-       // Toaster::success('Order placed successfully!');
+        Toaster::success('Order placed successfully!');
 
         $this->redirect(route('home') . '?orderId=' . $order->uuid);
     }

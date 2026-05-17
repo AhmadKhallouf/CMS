@@ -26,7 +26,7 @@ class CartItem extends Component
 
         $this->dispatch('cart.updated');
 
-       // Toaster::success('Quantity increased for ' . $item->title);
+        Toaster::success('Quantity increased for ' . $item->title);
     }
 
     public function decrement()
@@ -42,7 +42,7 @@ class CartItem extends Component
         }
 
         $this->dispatch('cart.updated');
-       // Toaster::success('Quantity decreased for ' . $item->title);
+        Toaster::success('Quantity decreased for ' . $item->title);
     }
 
     public function remove()
@@ -56,7 +56,7 @@ class CartItem extends Component
         $this->item->delete();
 
         $this->dispatch('cart.updated');
-      //  Toaster::success('Item ' . $item->title . ' removed from cart');
+        Toaster::success('Item ' . $item->title . ' removed from cart');
     }
 
     public function render()
