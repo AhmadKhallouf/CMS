@@ -169,6 +169,10 @@
                                     {{ __('Orders') }}
                                 </x-dropdown-link>
 
+                                <x-dropdown-link href="{{ route('conversations') }}">
+                                    {{ __('Chats') }}
+                                </x-dropdown-link>
+
                                 @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
                                     <x-dropdown-link href="{{ route('api-tokens.index') }}">
                                         {{ __('API Tokens') }}
@@ -194,8 +198,11 @@
             @endauth
             <!-- Hamburger -->
             <div class="-mr-2 flex items-center sm:hidden">
-                <button @click="open = ! open"
-                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
+                <button @click="open = ! open" 
+                        @keydown.escape="open = false"
+                        x-ref="hamburgerButton"
+                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out"
+                        :class="{ 'bg-gray-100 dark:bg-gray-900': open }">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex"
                               stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -209,7 +216,17 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+    <div x-show="open" 
+         x-cloak
+         @click.away="open = false"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 transform -translate-y-2"
+         x-transition:enter-end="opacity-100 transform translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 transform translate-y-0"
+         x-transition:leave-end="opacity-0 transform -translate-y-2"
+         class="sm:hidden"
+         style="display: none;">
         <div class="pt-2 pb-3 space-y-1">
             @foreach($navigationItems as $item)
                 @if ($item['show_for'] === 'public' && !auth()->user())
@@ -227,6 +244,40 @@
                 @endif
             @endforeach
 
+            <!-- Add Cart to Mobile Menu for Guests -->
+            @guest
+            <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2"></div>
+            <x-responsive-nav-link href="{{ route('cart') }}" :active="request()->routeIs('cart')">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                    </svg>
+                    Cart ({{ $cart->getItemsCount() }})
+                </div>
+            </x-responsive-nav-link>
+            
+            <!-- Add Login and Register to Mobile Menu for Guests -->
+            <x-responsive-nav-link href="{{ route('login') }}" :active="request()->routeIs('login')">
+                {{ __('Login') }}
+            </x-responsive-nav-link>
+            
+            <x-responsive-nav-link href="{{ route('register') }}" :active="request()->routeIs('register')">
+                {{ __('Register') }}
+            </x-responsive-nav-link>
+            @endguest
+
+            <!-- Add Cart to Mobile Menu for Authenticated Users -->
+            @auth
+            <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2"></div>
+            <x-responsive-nav-link href="{{ route('cart') }}" :active="request()->routeIs('cart')">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                    </svg>
+                    Cart ({{ $cart->getItemsCount() }})
+                </div>
+            </x-responsive-nav-link>
+            @endauth
         </div>
 
         @auth
@@ -252,6 +303,16 @@
                     <x-responsive-nav-link href="{{ route('profile.show') }}"
                                            :active="request()->routeIs('profile.show')">
                         {{ __('Profile') }}
+                    </x-responsive-nav-link>
+
+                    <x-responsive-nav-link href="{{ route('orders.show') }}"
+                                           :active="request()->routeIs('orders.show')">
+                        {{ __('Orders') }}
+                    </x-responsive-nav-link>
+
+                    <x-responsive-nav-link href="{{ route('conversations') }}"
+                                           :active="request()->routeIs('conversations')">
+                        {{ __('Chats') }}
                     </x-responsive-nav-link>
 
                     @if (Laravel\Jetstream\Jetstream::hasApiFeatures())

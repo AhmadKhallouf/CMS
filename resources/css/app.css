@@ -3,3 +3,141 @@
 /* Tell Tailwind where to find your Blade files */
 @source "../views/**/*.blade.php";
 @source "../../storage/framework/views/*.php";
+
+/* Alpine.js - hide elements with x-cloak until Alpine is ready */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Mobile menu styling - ONLY show when Alpine says so */
+.sm\:hidden {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Remove the problematic rules that force the menu to always show */
+/* The following rules have been removed or fixed:
+   - Removed .sm\:hidden { display: block !important; } from media query
+   - Removed conflicting positioning rules
+*/
+
+/* Ensure mobile menu appears above other content when open */
+.sm\:hidden[x-show="open"] {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    z-index: 9999;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+}
+
+/* Dark mode support */
+.dark .sm\:hidden[x-show="open"] {
+    background-color: #1f2937;
+}
+
+/* Hamburger button active state */
+.hamburger-active {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark .hamburger-active {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile Navigation Fixes */
+@media (max-width: 640px) {
+    /* Improve touch targets for mobile */
+    .responsive-nav-link {
+        display: block !important;
+        padding: 0.75rem 1rem !important;
+        font-size: 1rem !important;
+    }
+    
+    /* Add separator for guest links in mobile menu */
+    .mobile-menu-separator {
+        border-top: 1px solid #e5e7eb;
+        margin: 0.5rem 0;
+    }
+    
+    .dark .mobile-menu-separator {
+        border-top-color: #374151;
+    }
+}
+
+/* Improve mobile menu button touch area */
+button.hamburger-button {
+    min-width: 44px;
+    min-height: 44px;
+}
+
+/* Fix for dropdown menus on mobile */
+@media (max-width: 640px) {
+    .dropdown-menu {
+        position: static !important;
+        width: 100% !important;
+        margin-top: 0.5rem !important;
+    }
+}
+
+/* Ensure text is readable on mobile */
+@media (max-width: 640px) {
+    .nav-link-text {
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+}
+
+/* Fix for profile dropdown on mobile */
+@media (max-width: 640px) {
+    .profile-dropdown-content {
+        position: static !important;
+        width: 100% !important;
+        margin-top: 0.5rem !important;
+        box-shadow: none !important;
+        border: 1px solid #e5e7eb !important;
+    }
+    
+    .dark .profile-dropdown-content {
+        border-color: #374151 !important;
+    }
+}
+
+/* Make cart badge more visible on mobile */
+@media (max-width: 640px) {
+    .cart-badge {
+        position: relative;
+        top: -2px;
+        right: -2px;
+    }
+}
+
+/* Prevent horizontal scroll on mobile */
+body {
+    overflow-x: hidden;
+}
+
+/* Improve spacing for mobile menu items */
+@media (max-width: 640px) {
+    .space-y-1 > * + * {
+        margin-top: 0.25rem;
+    }
+    
+    .py-2 {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+}
+
+/* Ensure proper z-indexing */
+[x-data] {
+    position: relative;
+}
+
+/* Ensure the mobile menu button is always clickable */
+button[class*="inline-flex items-center justify-center p-2"] {
+    position: relative;
+    z-index: 1001;
+}
