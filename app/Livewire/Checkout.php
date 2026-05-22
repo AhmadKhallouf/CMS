@@ -2,34 +2,34 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use Masmerise\Toaster\Toaster;
-use Stripe\PaymentIntent;
-use Livewire\Attributes\On;
-use App\Models\ShippingType;
-use App\Services\CartManager;
-use Livewire\Attributes\Computed;
 use App\Livewire\Forms\AddressCheckoutForm;
 use App\Livewire\Forms\CustomerCheckoutForm;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Stripe\Stripe;
+use App\Models\Order;
+use App\Models\ShippingType;
+use App\Services\CartManager;
+use Livewire\Attributes\On;
+use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
 class Checkout extends Component
 {
-
     public $items;
+
     public CustomerCheckoutForm $customerForm;
+
     public AddressCheckoutForm $addressForm;
+
     public $showAddressForm = false;
+
     public $shippingType;
+
     public $address_model;
+
     public $shippingTypeModel;
 
     protected $listeners = [
         'cart.updated' => '$refresh',
     ];
-
 
     public function getCartProperty()
     {
@@ -64,7 +64,7 @@ class Checkout extends Component
         $this->shippingTypeModel = $this->shippingTypes->first();
         $this->customerForm->email = auth()->user()->email ?? null;
         $this->address_model = $this?->addresses?->first()->id ?? null;
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             $this->showAddressForm = true;
         }
     }
@@ -89,7 +89,6 @@ class Checkout extends Component
         return auth()->user()->createSetupIntent();
     }
 
-
     public function callValidate()
     {
         $this->validate();
@@ -102,30 +101,79 @@ class Checkout extends Component
 
     public function checkout($paymentMethodId)
     {
-        $this->dispatch('submitPayment');
+        $this->customerForm->validate();
 
         $user = auth()->user();
 
-        if (!$user->stripe_id) {
-            $user->createAsStripeCustomer();
+        if (! $user) {
+            Toaster::error('You must be logged in to complete checkout.');
+
+            return;
         }
 
-        auth()->user()->addPaymentMethod($paymentMethodId['id']);
+        $paymentMethod = $this->resolvePaymentMethodId($paymentMethodId);
 
-        $user->charge($this->total, $paymentMethodId['id'], [
-            'return_url' => route('home') . '?success=true',
-        ]);
+        try {
+            if (! $user->stripe_id) {
+                $user->createAsStripeCustomer();
+            }
 
-        app(CartManager::class)->clear();
+            $user->addPaymentMethod($paymentMethod);
 
-        $order = $user->orders()->create([
-            'total' => $this->total,
-            'address_id' => $this->address_model,
-            'email' => $this->customerForm->email,
-        ]);
+            $user->charge($this->total, $paymentMethod, [
+                'return_url' => route('checkout').'?success=true',
+            ]);
 
-        Toaster::success('Order placed successfully!');
+            $cart = $this->cart->getCart();
 
-        $this->redirect(route('home') . '?orderId=' . $order->uuid);
+            $order = $user->orders()->create([
+                'total' => $this->total,
+                'address_id' => $this->address_model,
+                'shipping_type_id' => $this->shippingType,
+                'email' => $this->customerForm->email,
+            ]);
+
+            foreach ($cart->items as $item) {
+                $price = $item->variant ? $item->variant->price : $item->product->price;
+
+                $pivot = [
+                    'quantity' => $item->quantity,
+                    'price' => $price,
+                ];
+
+                if ($item->variant_id) {
+                    $pivot['variant_id'] = $item->variant_id;
+                }
+
+                $order->products()->attach($item->product_id, $pivot);
+            }
+
+            $this->cart->clear();
+
+            Toaster::success('Order placed successfully!');
+
+            $this->redirect(route('home').'?orderId='.$order->order_id);
+        } catch (\Exception $e) {
+            Toaster::error('Payment failed: '.$e->getMessage());
+
+            throw $e;
+        }
+    }
+
+    private function resolvePaymentMethodId(mixed $paymentMethodId): string
+    {
+        if (is_array($paymentMethodId)) {
+            return $paymentMethodId['id'] ?? throw new \InvalidArgumentException('Invalid payment method.');
+        }
+
+        if (is_object($paymentMethodId)) {
+            return $paymentMethodId->id ?? throw new \InvalidArgumentException('Invalid payment method.');
+        }
+
+        if (! is_string($paymentMethodId) || $paymentMethodId === '') {
+            throw new \InvalidArgumentException('Invalid payment method.');
+        }
+
+        return $paymentMethodId;
     }
 }

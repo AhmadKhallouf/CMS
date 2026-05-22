@@ -29,6 +29,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Pages\AdminChatPage;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -38,6 +39,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->homeUrl('/admin')
             ->login()
                     ->plugin(
             ThemesPlugin::make()
@@ -45,10 +47,11 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Cyan,
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+           // ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+           // ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+                AdminChatPage::class,
             ])
             ->navigation(function (NavigationBuilder $builder): NavigationBuilder
             {
@@ -67,11 +70,12 @@ class AdminPanelProvider extends PanelProvider
 
                     NavigationGroup::make('Users & Roles')->items([
                         ...UsersResource::getNavigationItems(),
+                        ...AdminChatPage::getNavigationItems(),
                     ]),
 
                 ]);
             })
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+           // ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,

@@ -164,9 +164,10 @@
                                     {{ __('Manage Account') }}
                                 </div>
 
-                                {{-- <x-dropdown-link href="{{ route('orders.show') }}">
+
+                                <x-dropdown-link href="{{ route('orders.show') }}">
                                     {{ __('Orders') }}
-                                </x-dropdown-link> --}}
+                                </x-dropdown-link>
 
                                 @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
                                     <x-dropdown-link href="{{ route('api-tokens.index') }}">

@@ -11,7 +11,7 @@ use Illuminate\View\View;
 
 class ChatController extends Controller
 {
-    /**
+    /** 
      * Show the chat view with a specific user
      */
     public function index(User $user): View

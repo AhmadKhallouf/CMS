@@ -21,7 +21,8 @@ class Order extends Model
         'discount',
         'total',
         'status',
-        'address_id'
+        'address_id',
+        'shipping_type_id'
     ];
 
     public static function booted()
@@ -40,12 +41,17 @@ class Order extends Model
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class,'order_product')
-        ->withPivot('variants','quantity','price')
+        ->withPivot('quantity','price')
         ->withTimestamps();
     }
 
     public function address(): BelongsTo
     {
         return $this->belongsTo(Address::class);
+    }
+
+    public function shippingType(): BelongsTo
+    {
+        return $this->belongsTo(ShippingType::class);
     }
 }

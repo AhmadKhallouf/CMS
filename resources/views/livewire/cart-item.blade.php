@@ -1,42 +1,58 @@
-<li class="flex flex-col space-y-3 py-6 text-left sm:flex-row sm:space-x-5 sm:space-y-0">
-    <div class="shrink-0" style="height: 100px; width:100px" >
-        <img class="lg:h-24 lg:w-24 w-full max-w-full rounded-lg object-cover" src="{{ $item->variant->getFirstMediaUrl() }}" alt="{{ $item->variant->title }}"/>
+<li class="flex gap-4 border-b border-gray-100 py-6 last:border-0">
+    <div class="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-gray-100">
+        <img
+            class="h-full w-full object-cover"
+            src="{{ $item->variant?->getFirstMediaUrl() ?? $item->product->getFirstMediaUrl() }}"
+            alt="{{ $item->variant?->title ?? $item->product->title }}"
+        />
     </div>
 
-    <div class="relative flex flex-1 flex-col justify-between">
-        <div class="sm:col-gap-5 sm:grid sm:grid-cols-2">
-            <div class="pr-8 sm:pr-5">
+    <div class="flex min-w-0 flex-1 flex-col">
+        <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0 flex-1 pr-2">
                 <p class="text-base font-semibold text-gray-900">{{ $item->product->title }}</p>
-                <p class="mx-0 mt-1 mb-0 text-sm text-gray-400">
-                    @foreach($item->variant->parent() as $ancestor)
-                        {{ $ancestor->title }}@if(!$loop->last) | @endif
-                    @endforeach
-                </p>
+                @if ($item->variant)
+                    <p class="mt-1 text-sm text-gray-400">
+                        @foreach ($item->variant->parent() as $ancestor)
+                            {{ $ancestor->title }}@if (! $loop->last) | @endif
+                        @endforeach
+                    </p>
+                @endif
             </div>
 
-            <div class="mt-2 flex items-end justify-between sm:mt-0 sm:items-start sm:justify-end">
-                <p class="shrink-0 w-20 text-base font-semibold text-gray-900 sm:order-2 sm:ml-8 sm:text-right">
+            <div class="flex shrink-0 flex-col items-end gap-3">
+                <p class="text-base font-semibold text-gray-900">
                     {{ money($item->variant ? $item->variant->price : $item->product->price) }}
                 </p>
 
-                <div class="sm:order-1">
-                    <div class="mx-auto flex h-8 items-stretch text-gray-600">
-                        <button wire:click="decrement" class="flex items-center justify-center rounded-l-md bg-gray-200 px-4 transition hover:bg-black hover:text-white">-</button>
-                        <div class="flex w-full items-center justify-center bg-gray-100 px-4 text-xs uppercase transition">{{ $item->quantity }}</div>
-                        <button wire:click="increment" class="flex items-center justify-center rounded-r-md bg-gray-200 px-4 transition hover:bg-black hover:text-white">+</button>
-                    </div>
+                <div class="inline-flex h-8 overflow-hidden rounded-md border border-gray-200 text-gray-600">
+                    <button
+                        type="button"
+                        wire:click="decrement"
+                        class="flex w-9 items-center justify-center bg-gray-50 transition hover:bg-gray-900 hover:text-white"
+                    >−</button>
+                    <span class="flex min-w-[2.5rem] items-center justify-center bg-white px-2 text-sm font-medium">
+                        {{ $item->quantity }}
+                    </span>
+                    <button
+                        type="button"
+                        wire:click="increment"
+                        class="flex w-9 items-center justify-center bg-gray-50 transition hover:bg-gray-900 hover:text-white"
+                    >+</button>
                 </div>
-            </div>
-        </div>
 
-        <!-- X button matching exact width and height of the quantity div -->
-        <div class="flex justify-end mb-8">
-            <button wire:click="remove" type="button" class="flex h-6 w-full max-w-[120px] items-center justify-center rounded-md bg-gray-200 px-1 text-center text-gray-600 transition hover:bg-black hover:text-white sm:w-auto">
-                <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" class=""></path>
-                </svg>
-                <span>Remove Item</span>
-            </button>
+                <button
+                    type="button"
+                    wire:click="remove"
+                    class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md bg-gray-100 px-3 py-1.5 text-sm text-gray-600 transition hover:bg-gray-900 hover:text-white"
+                >
+                    <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span>Remove</span>
+                </button>
+            </div>
         </div>
     </div>
 </li>
+

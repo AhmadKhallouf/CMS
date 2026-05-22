@@ -95,14 +95,17 @@ public function receivedMessages(): HasMany
 public function conversations()
 {
     $userIds = Message::where('sender_id', $this->id)
-                ->orWhere('receiver_id', $this->id)
-                ->pluck('sender_id')
-                ->merge(Message::where('receiver_id', $this->id)->pluck('receiver_id'))
-                ->unique()
-                ->filter(function($id) {
-                    return $id != $this->id; // Remove self
-                });
-
+        ->select('receiver_id as user_id')
+        ->union(
+            Message::where('receiver_id', $this->id)
+                ->select('sender_id as user_id')
+        )
+        ->distinct()
+        ->pluck('user_id')
+        ->filter(function($id) {
+            return $id != $this->id;
+        });
+    
     return User::whereIn('id', $userIds);
 }
 
@@ -129,6 +132,11 @@ public function addresses(): HasMany
 public function orders(): HasMany
 {
     return $this->hasMany(Order::class);
+}
+
+public function carts(): HasMany
+{
+    return $this->hasMany(Cart::class);
 }
 
 

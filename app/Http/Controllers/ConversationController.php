@@ -14,7 +14,7 @@ class ConversationController extends Controller
      */
     public function index(): View
     {
-        $users = auth()->user()->conversations()
+        $users = auth()->user()->conversations() 
                     ->get()
                     ->map(function($user) {
                         $user->last_message = auth()->user()->lastMessageWith($user);

@@ -12,18 +12,18 @@ class CartMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\Http\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $cart = app(CartManager::class);
-
-        if(!$cart->exists()){
-            $cart->create($request->user());
+        if ($request->routeIs('login', 'logout')) {
+            return $next($request);
         }
 
-        if($request->user()){
-            $cart->associateWithUser();
+        $cart = app(CartManager::class);
+
+        if ($user = $request->user()) {
+            $cart->syncForAuthenticatedUser($user);
         }
 
         return $next($request);

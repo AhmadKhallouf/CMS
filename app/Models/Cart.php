@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
@@ -17,13 +18,12 @@ class Cart extends Model
     ];
 
 
-    public static function creating($callback)
+    protected static function booted(): void
     {
-        parent::boot();
-
-        static::creating(function (Cart $cart){
-            $cart->cart_id = Str::uuid();
-            $cart->save();
+        static::creating(function (Cart $cart) {
+            if (empty($cart->cart_id)) {
+                $cart->cart_id = (string) Str::uuid();
+            }
         });
     }
 
@@ -47,6 +47,11 @@ class Cart extends Model
     //         ]);
     //     }
     // }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function items(): HasMany
     {

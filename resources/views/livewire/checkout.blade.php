@@ -2,36 +2,55 @@
     x-data="{
         stripe: null,
         cardElement: null,
-        email: @entangle('accountForm.email').defer,
+        processing: false,
+        payLabel: @js('Pay ' . money($this->total)),
+        email: @entangle('customerForm.email').defer,
 
-        async submit () {
-            if (!this.stripe || !this.cardElement) {
-                console.log('Stripe.js has not loaded yet.')
+        resetButton(button) {
+            if (!button) return;
+            button.disabled = false;
+            button.innerHTML = this.payLabel;
+            this.processing = false;
+        },
+
+        async submit() {
+            if (this.processing || !this.stripe || !this.cardElement) {
                 return;
             }
+
+            const button = document.getElementById('card-button');
+            this.processing = true;
+            button.disabled = true;
+            button.innerHTML = 'Processing...';
+
             const { paymentMethod, error } = await this.stripe.createPaymentMethod(
-                'card', this.cardElement, {
-                    billing_details: { email: this.email }
-                }
+                'card',
+                this.cardElement,
+                { billing_details: { email: this.email } }
             );
 
             if (error) {
-                console.log(error) 
-            } else {
-                $wire.checkout(paymentMethod)
+                this.resetButton(button);
+                alert(error.message);
+                return;
+            }
+
+            try {
+                await @this.checkout(paymentMethod.id);
+            } catch (e) {
+                this.resetButton(button);
             }
         },
-        init() {
-            this.stripe = Stripe('{{ config('stripe.key') }}')
 
-            const elements = this.stripe.elements()
-            this.cardElement = elements.create('card')
- 
-            this.cardElement.mount('#card-element')
+        init() {
+            this.stripe = Stripe(@js(config('stripe.key')));
+            const elements = this.stripe.elements();
+            this.cardElement = elements.create('card');
+            this.cardElement.mount('#card-element');
         }
     }"
-    x-on:submit.prevent="submit"
-    class="flex mx-auto flex-col lg:flex-row">
+    @submit.prevent="submit"
+>
     <section class="flex-grow p-5 lg:pl-32">
         <div class="flex items-center justify-center">
             <h1 class="text-2xl font-semibold text-gray-900">Customer Details</h1>
@@ -144,7 +163,7 @@
 
             @auth()
                 <div class="mt-3">
-                    <button wire:click="addAddress">Add Address</button>
+                    <button type="button" wire:click="addAddress">Add Address</button>
                 </div>
             @endauth
         @endif

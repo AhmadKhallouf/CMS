@@ -44,6 +44,7 @@ class CartManager  implements CartInterface
             $cart->save();
 
             $this->session->put(config('cart.session.cart_key'), $cart->cart_id);
+            $this->cart = $cart;
         }
 
 
@@ -82,10 +83,10 @@ class CartManager  implements CartInterface
 
         public function add($productId, $variantId = null, $quantity = 1)
         {
-           $item = CartItem::where('cart_id', $this->getCart()->id)
+           $item = CartItem::where('cart_id', $this->ensureCartExists()->id)
             ->where('product_id', $productId)
             ->where('variant_id', $variantId)
-            ->where('cart_id', $this->getCart()->id)
+            ->where('cart_id', $this->ensureCartExists()->id)
             ->first();
 
 
@@ -104,7 +105,7 @@ class CartManager  implements CartInterface
             $item = Cartitem::make();
 
             $item->product_id = $productId;
-            $item->cart_id = $this->getCart()->id;
+            $item->cart_id = $this->ensureCartExists()->id;
             $item->quantity = $quantity;
 
             if($variantId){
@@ -121,7 +122,7 @@ class CartManager  implements CartInterface
 
         public function getItemsCount(): int
         {
-            return $this->getCart()->items()->count();
+            return $this->getCart()?->items()->count() ?? 0;
         }
 
 
@@ -137,23 +138,103 @@ class CartManager  implements CartInterface
         }
 
 
-        public function getCart()
+        public function getCart(): ?Cart
         {
-
-            if($this->cart){
-                return  $this->cart;
+            if ($this->cart) {
+                return $this->cart;
             }
 
-            return $this->cart = Cart::where('cart_id', $this->session->get(config('cart.session.cart_key')))->first();
+            $cartId = $this->session->get(config('cart.session.cart_key'));
+
+            if (! $cartId) {
+                return null;
+            }
+
+            return $this->cart = Cart::where('cart_id', $cartId)->first();
+        }
+
+        public function ensureCartExists(): Cart
+        {
+            if ($cart = $this->getCart()) {
+                if (Auth::check()) {
+                    $this->associateWithUser();
+                }
+
+                return $cart;
+            }
+
+            $user = Auth::user();
+
+            if ($user && $this->restoreForUser($user)) {
+                return $this->cart;
+            }
+
+            $this->create($user);
+
+            return $this->cart;
         }
 
 
-        public function associateWithUser()
+        public function associateWithUser(): void
         {
+            if (! Auth::check()) {
+                return;
+            }
 
-            $this->cart->user_id = Auth::id();
+            $cart = $this->getCart();
 
-            $this->cart->save();
+            if (! $cart) {
+                return;
+            }
+
+            if ((int) $cart->user_id === (int) Auth::id()) {
+                return;
+            }
+
+            $cart->user_id = Auth::id();
+            $cart->save();
+            $this->cart = $cart;
+        }
+
+        public function restoreForUser(User $user): bool
+        {
+            $storedCart = Cart::query()
+                ->where('user_id', $user->id)
+                ->whereHas('items')
+                ->latest('updated_at')
+                ->first();
+
+            if (! $storedCart) {
+                return false;
+            }
+
+            $this->session->put(config('cart.session.cart_key'), $storedCart->cart_id);
+            $this->cart = $storedCart;
+
+            return true;
+        }
+
+        public function syncForAuthenticatedUser(User $user): void
+        {
+            $sessionCart = $this->getCart();
+
+            if ($sessionCart && $sessionCart->items()->exists()) {
+                if ((int) $sessionCart->user_id !== (int) $user->id) {
+                    $sessionCart->user_id = $user->id;
+                    $sessionCart->save();
+                    $this->cart = $sessionCart;
+                }
+
+                return;
+            }
+
+            if ($this->restoreForUser($user)) {
+                return;
+            }
+
+            if (! $sessionCart) {
+                $this->create($user);
+            }
         }
 
 
@@ -161,7 +242,13 @@ class CartManager  implements CartInterface
         {
             $subtotal = 0;
 
-            $cartItem = $this->getCart()->items;
+            $cart = $this->getCart();
+
+            if (! $cart) {
+                return 0;
+            }
+
+            $cartItem = $cart->items;
 
             foreach($cartItem as $item){
 
@@ -178,6 +265,16 @@ class CartManager  implements CartInterface
             }
 
             return $subtotal;
+        }
+
+        public function clear(): void
+        {
+            if ($cart = $this->getCart()) {
+                $cart->items()->delete();
+            }
+
+            $this->session->forget(config('cart.session.cart_key'));
+            $this->cart = null;
         }
 }
 
