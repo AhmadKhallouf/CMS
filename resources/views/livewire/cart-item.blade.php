@@ -2,7 +2,7 @@
     <div class="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-gray-100">
         <img
             class="h-full w-full object-cover"
-            src="{{ $item->variant?->getFirstMediaUrl() ?? $item->product->getFirstMediaUrl() }}"
+            src="{{  $item->product->getFirstMediaUrl() }}"
             alt="{{ $item->variant?->title ?? $item->product->title }}"
         />
     </div>

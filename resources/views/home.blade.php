@@ -29,7 +29,5 @@
             </div>
         </div>
     </div>
-    <div>
-        <a href="{{ route('getPage') }}">get page now</a>
-    </div>
+   
 </x-app-layout>

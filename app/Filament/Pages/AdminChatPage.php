@@ -52,34 +52,44 @@ class AdminChatPage extends Page
     }
 
     public function loadUsers(): void
-    {
-        $currentUserId = auth()->id();
+{
+    $currentUserId = auth()->id();
 
-        $this->users = User::where('id', '!=', $currentUserId)
-            ->withCount(['sentMessages', 'receivedMessages'])
-            ->havingRaw('sent_messages_count + received_messages_count > 0')
-            ->orderBy('name')
-            ->get()
-            ->map(function ($user) use ($currentUserId) {
-                $lastMessage = Message::where(function ($query) use ($user, $currentUserId) {
-                    $query->where('sender_id', $currentUserId)
-                        ->where('receiver_id', $user->id);
-                })->orWhere(function ($query) use ($user, $currentUserId) {
-                    $query->where('sender_id', $user->id)
-                        ->where('receiver_id', $currentUserId);
-                })->latest()->first();
-
-                $user->last_message = $lastMessage;
-                $user->unread_count = Message::where('sender_id', $user->id)
-                    ->where('receiver_id', $currentUserId)
-                    ->where('is_read', false)
-                    ->count();
-
-                return $user;
+    $this->users = User::where('id', '!=', $currentUserId)
+        ->where(function ($query) use ($currentUserId) {
+            // User has sent messages to admin
+            $query->whereHas('sentMessages', function ($q) use ($currentUserId) {
+                $q->where('receiver_id', $currentUserId);
             })
-            ->sortByDesc(fn ($user) => $user->last_message?->created_at)
-            ->values();
-    }
+            // OR user has received messages from admin
+            ->orWhereHas('receivedMessages', function ($q) use ($currentUserId) {
+                $q->where('sender_id', $currentUserId);
+            });
+        })
+        ->orderBy('name')
+        ->get()
+        ->map(function ($user) use ($currentUserId) {
+            $lastMessage = Message::where(function ($query) use ($user, $currentUserId) {
+                $query->where('sender_id', $currentUserId)
+                    ->where('receiver_id', $user->id);
+            })->orWhere(function ($query) use ($user, $currentUserId) {
+                $query->where('sender_id', $user->id)
+                    ->where('receiver_id', $currentUserId);
+            })->latest()->first();
+
+            $unreadCount = Message::where('sender_id', $user->id)
+                ->where('receiver_id', $currentUserId)
+                ->where('is_read', false)
+                ->count();
+
+            $user->last_message = $lastMessage;
+            $user->unread_count = $unreadCount;
+
+            return $user;
+        })
+        ->sortByDesc(fn($user) => $user->last_message?->created_at)
+        ->values();
+}
 
     public function updatedSearchTerm(): void
     {

@@ -7,8 +7,6 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProductShowController;
-use App\Http\Controllers\TestController;
-use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\OrderShowController;
@@ -58,9 +56,6 @@ Route::middleware([
     })->name('dashboard');
 });
 
-Route::get('/get-page-test',[TestController::class,'getPage'])->name('getPage');
-Route::get('/send-post',[TestController::class,'formTest'])->name('formTest');
-Route::get('/send-post',[TestController::class,'formTest'])->name('test-1');
 
 
 

@@ -6,11 +6,13 @@
     <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div wire:ignore>
+                <div> <!-- Removed wire:ignore -->
                     @if (count($product->getMedia()) > 1)
                         <x-gallery :media="$product->getMedia()"/> 
-                    @else
-                        <img src="{{ $product->getFirstMediaUrl() }}" alt="{{ $product->meta_description }}"/>
+                    @elseif($product->getFirstMediaUrl())
+                        <div class="relative h-56 overflow-hidden rounded-lg md:h-[500px] bg-gray-100 dark:bg-gray-800">
+                            <img src="{{ $product->getFirstMediaUrl() }}" alt="{{ $product->meta_description }}" class="w-full h-full object-contain"/>
+                        </div>
                     @endif
                 </div>
                 <div>
