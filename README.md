@@ -586,6 +586,12 @@ This project is open-sourced under the [MIT License](https://opensource.org/lice
 
 ---
 
+## 🎥 Project Video Link
+
+[![Watch the demo video](https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=58AweHRBdew)
+
+---
+
 <p align="center">
   <sub>Built with Laravel · Livewire · Filament · Reverb · Stripe</sub>
 </p>
